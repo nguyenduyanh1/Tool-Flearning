@@ -1,6 +1,8 @@
-# CLAUDE.md — Luật dự án Brand Kit
+# CLAUDE.md — Luật dự án F.Learning Tools
 
-Tool tách ra từ Cá Space (F.Learning Studio), chạy độc lập. Xem `README.md` cho kiến trúc.
+Bộ tool của F.Learning Studio ở tool-flearning.web.app: sảnh `hub/` + mỗi tool một thư mục,
+một service Cloud Run riêng. Xem `README.md` (gốc) cho cách tổ chức và cách thêm tool.
+Tool đầu tiên: Brand Kit (`brandkit/`, tách ra từ Cá Space).
 
 ## Người dùng
 
@@ -17,7 +19,7 @@ Duy Anh — dân motion graphics, không phải kỹ sư backend.
 - **Không** thêm dòng `Co-Authored-By` — repo chỉ đứng tên người dùng.
 - Git: dùng danh tính sẵn có trên máy (`Nguyễn Duy Anh <duyanha6@gmail.com>`).
   Không bao giờ truyền `-c user.email`.
-- `npm run lint` phải sạch trước khi commit.
+- `npm run lint` (trong thư mục tool) phải sạch trước khi commit.
 
 ## Bí mật và dữ liệu khách
 
@@ -30,11 +32,11 @@ Duy Anh — dân motion graphics, không phải kỹ sư backend.
 
 - Cloud Run `min-instances=0`, `max-instances=1`. Không tăng nếu chưa bàn với người dùng.
 - Giữ trong hạn mức miễn phí. Trước khi thêm gì gọi API liên tục, nói ước lượng chi phí trước.
-- Khách thật đang dùng service này — **luôn hỏi người dùng trước khi deploy**.
+- Khách thật đang dùng — **luôn hỏi người dùng trước khi deploy** (cả Cloud Run lẫn Hosting).
 - Deploy lại **không** truyền `--set-env-vars` / `--env-vars-file` (ghi đè mất `BRANDKIT_SECRET`).
 
-## Template
+## Brand Kit — template
 
 - Kết quả phải khớp file thiết kế gốc: soát bằng chế độ `{ original: true }` so với `verify/`.
 - Chữ phải đạt tương phản WCAG với cái nằm ngay dưới nó (4,5:1 chữ nhỏ, 3:1 chữ ≥ 18pt).
-- Chi tiết quy trình: `scripts/templates/README.md`.
+- Chi tiết quy trình: `brandkit/scripts/templates/README.md`.

@@ -6,8 +6,4 @@ node_modules/
 templates-src/
 public/templates/**/verify/
 scripts/
-firebase.json
-.firebaserc
-hosting-empty/
-CLAUDE.md
 README.md
