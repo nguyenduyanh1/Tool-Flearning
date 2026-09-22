@@ -20,6 +20,10 @@ Duy Anh — dân motion graphics, không phải kỹ sư backend.
 - Git: dùng danh tính sẵn có trên máy (`Nguyễn Duy Anh <duyanha6@gmail.com>`).
   Không bao giờ truyền `-c user.email`.
 - `npm run lint` (trong thư mục tool) phải sạch trước khi commit.
+- **Commit xong thì push lên GitHub luôn** (người dùng đã chốt), để GitHub luôn là bản mới
+  nhất — nơi mọi người cùng sửa gặp nhau. Push ≠ deploy: link thật chỉ đổi khi deploy.
+- Trước khi deploy: `git pull` để chắc máy đang có bản mới nhất — deploy tay gửi code từ
+  thư mục trên máy, máy cũ hơn GitHub thì sẽ đưa bản cũ lên và làm mất tính năng.
 
 ## Bí mật và dữ liệu khách
 
