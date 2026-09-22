@@ -208,18 +208,14 @@
 <script>
   var $ = function (id) { return document.getElementById(id); };
 
-  // ---------- Intro: hiện lần đầu vào tool; đóng (Get started hoặc Esc) thì nhớ lại ----------
-  // localStorage có thể bị chặn (cửa sổ ẩn danh, chặn cookie) → khi đó cứ hiện mỗi lần vào.
+  // ---------- Intro: hiện MỖI LẦN vào tool (người dùng chốt: không nhớ "đã đọc") ----------
   (function () {
-    var KEY = "bk_intro_seen", seen = false;
-    try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
     $("intro").addEventListener("close", function () {
-      try { localStorage.setItem(KEY, "1"); } catch (e) {}
       // chờ trình duyệt trả focus về chỗ cũ xong rồi mới đưa con trỏ vào ô link
       setTimeout(function () { $("siteUrl").focus(); }, 0);
     });
     $("introOpen").addEventListener("click", function () { $("intro").showModal(); });
-    if (!seen) $("intro").showModal();
+    $("intro").showModal();
   })();
 
   // thương hiệu đang áp; color = null nghĩa là chưa áp, hiện template với màu gốc
