@@ -4,7 +4,7 @@ node_modules/
 *.log
 
 # File thiết kế gốc của khách (dùng để dựng template) — không đưa lên git
-templates-src/
+**/templates-src/
 
 # Ảnh đối chiếu khi soát template — chỉ dùng trên máy
-public/templates/**/verify/
+**/public/templates/**/verify/
