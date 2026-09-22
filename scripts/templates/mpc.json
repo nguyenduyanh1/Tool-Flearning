@@ -1,0 +1,22 @@
+{
+  "id": "mpc",
+  "name": "Patient Communication",
+  "source": "templates-src/mpc-deck.pdf",
+  "pages": "all",
+  "scale": 2,
+  "baseHue": 220,
+  "background": "keep",
+  "bakeCardText": false,
+  "defaultColor": "#5e8dd1",
+  "defaultName": "Brand",
+  "fonts": {},
+  "logoSlots": [
+    {
+      "x": 1270,
+      "y": 748,
+      "w": 140,
+      "h": 36,
+      "add": true
+    }
+  ]
+}

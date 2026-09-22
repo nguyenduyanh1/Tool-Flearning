@@ -1,0 +1,9 @@
+{
+  "hosting": {
+    "site": "brandkit-flearning",
+    "public": "hosting-empty",
+    "rewrites": [
+      { "source": "**", "run": { "serviceId": "brandkit-flearning", "region": "asia-southeast1" } }
+    ]
+  }
+}

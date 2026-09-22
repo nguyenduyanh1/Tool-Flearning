@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand Kit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@300;400;500;600;700;800;900&family=Montserrat:wght@900&display=swap">
+<style>
+  :root {
+    --paper: #EFF3F3; --surface: #FFFFFF; --surface-2: #F6F9F9;
+    --ink: #0B1A1F; --muted: #5C7073; --hairline: #D5E0E0; --accent: #10726B;
+    --danger: #B42318;
+    --shadow: 0 1px 2px rgba(11,26,31,.06), 0 8px 24px rgba(11,26,31,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0A1214; --surface: #121D20; --surface-2: #172427;
+      --ink: #E4EEEE; --muted: #91A6A8; --hairline: #27383C; --accent: #57C9BE;
+      --danger: #F97066;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0A1214; --surface: #121D20; --surface-2: #172427;
+    --ink: #E4EEEE; --muted: #91A6A8; --hairline: #27383C; --accent: #57C9BE;
+    --danger: #F97066;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 18px 48px;
+    display: grid; gap: 14px; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .title { font: 700 16px/1 Archivo, system-ui, sans-serif; letter-spacing: -.01em; }
+  .bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .url { flex: 1 1 260px; min-width: 0; padding: 11px 13px; border-radius: 6px; font: inherit;
+    border: 1px solid var(--hairline); background: var(--surface); color: var(--ink); }
+  .btn { border: 1px solid var(--hairline); background: var(--surface); color: var(--ink);
+    border-radius: 6px; padding: 10px 16px; font: 600 13.5px/1 "IBM Plex Sans", sans-serif; cursor: pointer;
+    white-space: nowrap; }
+  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  input:focus-visible, button:focus-visible, .logo-pick:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .msg { margin: -4px 0 0; font-size: 12.5px; color: var(--danger); min-height: 0; }
+  .msg:empty { display: none; }
+
+  .tpls { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px; }
+  .tpl { flex: none; width: 200px; padding: 6px; border-radius: 7px; border: 1px solid var(--hairline);
+    background: var(--surface); cursor: pointer; display: grid; gap: 6px; text-align: left; color: var(--ink);
+    font: 500 12px/1.2 "IBM Plex Sans", sans-serif; }
+  .tpl img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; display: block;
+    background: var(--surface-2); }
+  .tpl[aria-checked="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+
+  .stage { background: var(--surface); border: 1px solid var(--hairline); border-radius: 8px;
+    box-shadow: var(--shadow); padding: 12px; }
+  #art svg { width: 100%; height: auto; display: block; border-radius: 4px; }
+
+  .logo-pick { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 6px;
+    padding: 5px 12px 5px 5px; border: 1px solid var(--hairline); background: var(--surface);
+    font: 600 13.5px/1 "IBM Plex Sans", sans-serif; }
+  .logo-thumb { width: 52px; height: 32px; border-radius: 4px; display: grid; place-items: center; overflow: hidden;
+    background: repeating-conic-gradient(var(--hairline) 0 25%, transparent 0 50%) 0 0 / 8px 8px; }
+  .logo-thumb img { max-width: 48px; max-height: 28px; object-fit: contain; }
+  .logo-thumb img[hidden] { display: none; }
+  .spacer { flex: 1; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .result { display: grid; gap: 14px; }
+  .result[hidden] { display: none; }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .pager[hidden], .strip[hidden] { display: none; }
+  .pglabel { font: 600 13px/1 "IBM Plex Sans", sans-serif; color: var(--muted); min-width: 96px; text-align: center;
+    font-variant-numeric: tabular-nums; }
+  .strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .strip button { flex: none; width: 96px; padding: 2px; border-radius: 4px; border: 1px solid var(--hairline);
+    background: var(--surface); cursor: pointer; }
+  .strip button[aria-current="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .strip img { width: 100%; display: block; border-radius: 2px; aspect-ratio: 16 / 9; object-fit: cover; }
+  .strip .locked { width: 100%; aspect-ratio: 16 / 9; border-radius: 2px; display: grid; place-items: center;
+    background: var(--surface-2); color: var(--muted); font: 600 11px/1 "IBM Plex Sans", sans-serif; }
+
+  dialog.unlock { border: 1px solid var(--hairline); border-radius: 10px; padding: 22px; width: min(380px, calc(100vw - 32px));
+    background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  dialog.unlock::backdrop { background: rgba(11,26,31,.45); }
+  .unlock form { display: grid; gap: 12px; margin: 0; }
+  .unlock h2 { font: 700 18px/1.25 Archivo, sans-serif; margin: 0; letter-spacing: -.01em; }
+  .unlock p { margin: 0; color: var(--muted); font-size: 13px; }
+  .unlock .fine { font-size: 11.5px; }
+  .unlock .url { flex: none; width: 100%; }
+  .unlock .bar { justify-content: flex-end; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="title">Brand Kit</span>
+  </header>
+
+  <form class="bar" id="siteForm">
+    <label class="sr" for="siteUrl">Website</label>
+    <input class="url" type="text" id="siteUrl" placeholder="Paste your website, e.g. tiki.vn" autocomplete="off" inputmode="url">
+  </form>
+
+  <div class="tpls" role="radiogroup" aria-label="Template" id="tpls"></div>
+
+  <div class="bar">
+    <button class="btn primary" type="submit" form="siteForm" id="siteGo">Apply</button>
+  </div>
+  <p class="msg" id="siteStatus" role="status"></p>
+
+  <section class="result" id="result" hidden>
+  <div class="stage"><div id="art"></div></div>
+
+  <div class="pager" id="pager" hidden>
+    <button class="btn" type="button" id="pgPrev" aria-label="Previous slide">‹</button>
+    <span class="pglabel" id="pgLabel"></span>
+    <button class="btn" type="button" id="pgNext" aria-label="Next slide">›</button>
+  </div>
+  <div class="strip" id="strip" hidden></div>
+
+  <div class="bar">
+    <label class="logo-pick" for="logoFile">
+      <span class="logo-thumb"><img id="logoThumb" alt="" hidden></span>
+      Change logo
+      <input class="sr" type="file" id="logoFile" accept="image/png,image/svg+xml,image/webp,image/jpeg">
+    </label>
+    <span class="spacer"></span>
+    <button class="btn" type="button" id="dlPng" disabled>Download PNG</button>
+    <button class="btn" type="button" id="dlSvg" disabled>Download SVG</button>
+    <button class="btn primary" type="button" id="dlPdf" disabled>Download PDF</button>
+  </div>
+  </section>
+</div>
+
+<dialog class="unlock" id="unlock" aria-labelledby="unlockTitle">
+  <form id="unlockForm">
+    <h2 id="unlockTitle">See all slides</h2>
+    <p id="unlockLead">Enter your email to view and download the full deck.</p>
+    <label class="sr" for="unlockEmail">Email</label>
+    <input class="url" type="email" id="unlockEmail" placeholder="you@company.com" autocomplete="email" required>
+    <p class="msg" id="unlockMsg" role="status"></p>
+    <p class="fine">We'll save your email and may contact you about F.Learning Studio.</p>
+    <div class="bar">
+      <button class="btn" type="button" id="unlockClose">Not now</button>
+      <button class="btn primary" type="submit" id="unlockGo">Unlock</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="/engine.js"></script>
+<script>
+  var $ = function (id) { return document.getElementById(id); };
+
+  // thương hiệu đang áp; color = null nghĩa là chưa áp, hiện template với màu gốc
+  var theme = { color: null, name: "", logo: null, logoMono: null, logoLum: null };
+  var view = null, current = null;
+  // template đang chọn: một trang (D60) hoặc bộ slide (deck.json liệt kê các trang)
+  var tplList = [], cur = null, deck = null, pageIdx = 0;
+
+  function themeFor(tpl) { return theme.color ? theme : { color: tpl.defaultColor, name: tpl.defaultName || "", logo: null }; }
+  function paint() { if (view) BrandKit.apply(view, themeFor(view.tpl)); }
+  function enableOutput() {
+    $("dlPng").disabled = $("dlSvg").disabled = $("dlPdf").disabled = !theme.color;
+  }
+  function pagePath(i) { return deck ? cur.id + "/" + deck.pages[i].id : cur.id; }
+  function pageCount() { return deck ? deck.pages.length : 1; }
+
+  // ---------- khoá slide 6+ bằng email (server mới là chốt thật, đây chỉ là giao diện) ----------
+  var FREE = 5, unlocked = false, afterUnlock = null;
+  fetch("/api/unlocked").then(function (r) { return r.json(); })
+    .then(function (j) { unlocked = !!j.unlocked; FREE = j.free || FREE; }).catch(function () {});
+  function isLocked(i) { return !!deck && !unlocked && i >= FREE; }
+  function askEmail(then) {
+    afterUnlock = then;
+    $("unlockTitle").textContent = "See all " + pageCount() + " slides";
+    $("unlockMsg").textContent = "";
+    $("unlock").showModal();
+    $("unlockEmail").focus();
+  }
+  $("unlockClose").addEventListener("click", function () { afterUnlock = null; $("unlock").close(); });
+  $("unlockForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var go = $("unlockGo"); go.disabled = true; go.textContent = "Unlocking…"; $("unlockMsg").textContent = "";
+    fetch("/api/lead", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: $("unlockEmail").value, site: appliedUrl || "", template: cur ? cur.id : "" })
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong."); }); })
+      .then(function () {
+        unlocked = true;
+        fillStrip();
+        $("unlock").close();
+        var then = afterUnlock; afterUnlock = null;
+        if (then) then();
+      })
+      .catch(function (err) { $("unlockMsg").textContent = err.message; })
+      .then(function () { go.disabled = false; go.textContent = "Unlock"; });
+  });
+
+  // dải ảnh nhỏ: slide bị khoá hiện ô "Locked", không gọi ảnh (server sẽ từ chối)
+  function fillStrip() {
+    var strip = $("strip"); strip.innerHTML = "";
+    if (!deck) return;
+    deck.pages.forEach(function (p, k) {
+      var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Slide " + (k + 1));
+      if (isLocked(k)) {
+        var ph = document.createElement("span"); ph.className = "locked"; ph.textContent = "🔒 " + (k + 1);
+        b.appendChild(ph);
+      } else {
+        var im = document.createElement("img"); im.loading = "lazy"; im.alt = "";
+        im.src = "/templates/" + cur.id + "/" + p.id + "/thumb.png";
+        b.appendChild(im);
+      }
+      b.setAttribute("aria-current", String(k === pageIdx));
+      b.addEventListener("click", function () { showPage(k); });
+      strip.appendChild(b);
+    });
+  }
+
+  function showPage(i) {
+    i = Math.max(0, Math.min(pageCount() - 1, i));
+    if (isLocked(i)) { askEmail(function () { showPage(i); }); return; }
+    pageIdx = i;
+    current = pagePath(pageIdx);
+    $("pgLabel").textContent = "Slide " + (pageIdx + 1) + " / " + pageCount();
+    $("pgPrev").disabled = pageIdx === 0; $("pgNext").disabled = pageIdx === pageCount() - 1;
+    [].forEach.call($("strip").children, function (b, k) { b.setAttribute("aria-current", String(k === pageIdx)); });
+    var want = current;
+    BrandKit.load($("art"), want).then(function (v) { if (want === current) { view = v; paint(); } })
+      .catch(function (e) { $("siteStatus").textContent = e.message; });
+  }
+
+  // ---------- chọn template: danh sách đọc từ templates/index.json ----------
+  // Chọn chỉ đánh dấu; áp brand chỉ chạy khi bấm Apply. Đổi template sau khi đã áp
+  // thì ẩn kết quả cũ, chờ bấm Apply lại.
+  function pick(id) {
+    if (cur && cur.id === id) return;
+    cur = tplList.find(function (t) { return t.id === id; });
+    document.querySelectorAll(".tpl").forEach(function (b) { b.setAttribute("aria-checked", String(b.dataset.id === id)); });
+    $("result").hidden = true; view = null; current = null;
+  }
+
+  // dựng phần kết quả cho template đang chọn (sau khi đã có brand)
+  function openResult() {
+    var id = cur.id, isDeck = !!cur.pages;
+    $("pager").hidden = $("strip").hidden = !isDeck;
+    $("dlSvg").hidden = isDeck;                        // bộ slide: tải PDF cả bộ, PNG từng slide
+    return (isDeck ? fetch("/templates/" + id + "/deck.json").then(function (r) { return r.json(); }) : Promise.resolve(null))
+      .then(function (d) {
+        deck = d; pageIdx = 0;
+        fillStrip();
+        $("result").hidden = false;
+        enableOutput();
+        showPage(0);
+      });
+  }
+  $("pgPrev").addEventListener("click", function () { showPage(pageIdx - 1); });
+  $("pgNext").addEventListener("click", function () { showPage(pageIdx + 1); });
+
+  fetch("/templates/index.json").then(function (r) { return r.json(); }).then(function (list) {
+    tplList = list;
+    var box = $("tpls");
+    list.forEach(function (t, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "tpl"; b.dataset.id = t.id;
+      b.setAttribute("role", "radio"); b.setAttribute("aria-checked", i === 0 ? "true" : "false");
+      var img = document.createElement("img");
+      img.src = "/templates/" + t.id + (t.pages ? "/p01" : "") + "/thumb.png"; img.alt = "";
+      b.append(img, document.createTextNode(t.name + (t.pages ? " · " + t.pages + " slides" : "")));
+      b.addEventListener("click", function () { pick(t.id); });
+      box.appendChild(b);
+    });
+    if (list[0]) pick(list[0].id);
+  }).catch(function () { $("siteStatus").textContent = "Couldn't load templates."; });
+
+  // ---------- đọc màu logo ----------
+  // Màu logo là tín hiệu tin nhất: CSS của trang hay lẫn màu mặc định framework.
+  function hsl3(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, h = 0, s = 0, l = (mx + mn) / 2;
+    if (d) { s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h = (h * 60 + 360) % 360; }
+    return [h, s, l];
+  }
+  function relLum(r, g, b) {
+    return [r, g, b].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); })
+      .reduce(function (a, v, i) { return a + [0.2126, 0.7152, 0.0722][i] * v; }, 0);
+  }
+  function logoPalette(dataUrl) {
+    return new Promise(function (resolve) {
+      var im = new Image();
+      im.onload = function () {
+        var S = 120, c = document.createElement("canvas"); c.width = S; c.height = S;
+        var x = c.getContext("2d", { willReadFrequently: true });
+        var k = Math.min(S / (im.naturalWidth || S), S / (im.naturalHeight || S));
+        var w = (im.naturalWidth || S) * k, h = (im.naturalHeight || S) * k;
+        x.drawImage(im, (S - w) / 2, (S - h) / 2, w, h);
+        var d; try { d = x.getImageData(0, 0, S, S).data; } catch (e) { return resolve({ colors: [], lum: null }); }
+        var buckets = {}, opaque = 0, ls = 0;
+        for (var i = 0; i < d.length; i += 4) {
+          if (d[i + 3] < 200) continue;
+          opaque++; ls += relLum(d[i], d[i + 1], d[i + 2]);
+          var q = hsl3(d[i], d[i + 1], d[i + 2]);
+          if (q[1] < 0.22 || q[2] < 0.12 || q[2] > 0.88) continue;
+          var key = (d[i] >> 4) + "," + (d[i + 1] >> 4) + "," + (d[i + 2] >> 4);
+          var b = buckets[key] || (buckets[key] = { n: 0, r: 0, g: 0, b: 0 });
+          b.n++; b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2];
+        }
+        var merged = [];
+        Object.keys(buckets).map(function (k2) { var b2 = buckets[k2]; return { n: b2.n, c: [b2.r / b2.n, b2.g / b2.n, b2.b / b2.n] }; })
+          .sort(function (a, b3) { return b3.n - a.n; }).forEach(function (it) {
+            var h1 = hsl3(it.c[0], it.c[1], it.c[2]);
+            var same = merged.find(function (m) { return Math.abs(((h1[0] - m.h[0] + 540) % 360) - 180) < 14 && Math.abs(h1[2] - m.h[2]) < 0.14; });
+            if (same) same.n += it.n; else merged.push({ n: it.n, c: it.c, h: h1 });
+          });
+        resolve({
+          lum: opaque ? ls / opaque : null,
+          colors: merged.slice(0, 4).map(function (m) {
+            return { hex: "#" + m.c.map(function (v) { return ("0" + Math.round(v).toString(16)).slice(-2); }).join(""), share: opaque ? m.n / opaque : 0 };
+          }).filter(function (m) { return m.share >= 0.04; })
+        });
+      };
+      im.onerror = function () { resolve({ colors: [], lum: null }); };
+      im.src = dataUrl;
+    });
+  }
+
+  function showThumb(u) { $("logoThumb").hidden = !u; if (u) $("logoThumb").src = u; }
+
+  // Logo phải trong suốt. Ảnh logo có nền đặc (thường là trắng, vd JPG hoặc PNG
+  // xuất vội) → loang từ 4 mép vào, xoá vùng cùng màu với mép. SVG để nguyên.
+  function cleanLogo(dataUrl) {
+    if (/^data:image\/svg/.test(dataUrl)) return Promise.resolve(dataUrl);
+    return new Promise(function (resolve) {
+      var im = new Image();
+      im.onload = function () {
+        var k = Math.min(1, 1024 / Math.max(im.naturalWidth, im.naturalHeight));
+        var W = Math.max(1, Math.round(im.naturalWidth * k)), H = Math.max(1, Math.round(im.naturalHeight * k));
+        var c = document.createElement("canvas"); c.width = W; c.height = H;
+        var x = c.getContext("2d", { willReadFrequently: true });
+        x.drawImage(im, 0, 0, W, H);
+        var img; try { img = x.getImageData(0, 0, W, H); } catch (e) { return resolve(dataUrl); }
+        var d = img.data;
+        function px(i) { return [d[i * 4], d[i * 4 + 1], d[i * 4 + 2], d[i * 4 + 3]]; }
+        var corners = [0, W - 1, (H - 1) * W, H * W - 1].map(px);
+        var solid = corners.every(function (p) { return p[3] > 250; });
+        var ref = corners[0];
+        var same = corners.every(function (p) { return Math.abs(p[0] - ref[0]) + Math.abs(p[1] - ref[1]) + Math.abs(p[2] - ref[2]) < 30; });
+        if (!solid || !same) return resolve(dataUrl);          // đã trong suốt, hoặc nền không đồng màu
+        var seen = new Uint8Array(W * H), st = [], TOL = 48;
+        function near(i) { var o = i * 4; return Math.abs(d[o] - ref[0]) + Math.abs(d[o + 1] - ref[1]) + Math.abs(d[o + 2] - ref[2]) <= TOL; }
+        for (var i2 = 0; i2 < W; i2++) { st.push(i2, (H - 1) * W + i2); }
+        for (var j = 0; j < H; j++) { st.push(j * W, j * W + W - 1); }
+        while (st.length) {
+          var p = st.pop();
+          if (seen[p] || !near(p)) continue;
+          seen[p] = 1; d[p * 4 + 3] = 0;
+          var px2 = p % W, py = (p / W) | 0;
+          if (px2 > 0) st.push(p - 1); if (px2 < W - 1) st.push(p + 1);
+          if (py > 0) st.push(p - W); if (py < H - 1) st.push(p + W);
+        }
+        x.putImageData(img, 0, 0);
+        resolve(c.toDataURL("image/png"));
+      };
+      im.onerror = function () { resolve(dataUrl); };
+      im.src = dataUrl;
+    });
+  }
+
+  // ---------- đổi logo bằng tay (chỗ chỉnh tay duy nhất) ----------
+  $("logoFile").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      cleanLogo(fr.result).then(function (u) { return logoPalette(u).then(function (p) { return { u: u, p: p }; }); }).then(function (x) {
+        var u = x.u, p = x.p;
+        theme.logo = u; theme.logoMono = null; theme.logoLum = p.lum;
+        if (!theme.color) theme.color = p.colors[0] ? p.colors[0].hex : (view ? view.tpl.defaultColor : "#5e8dd1");
+        showThumb(u); enableOutput(); paint();
+      });
+    };
+    fr.readAsDataURL(f);
+    e.target.value = "";
+  });
+
+  // ---------- áp brand từ website (nút Apply) ----------
+  var appliedUrl = null;   // link đã phân tích — bấm Apply lại cùng link thì khỏi đọc lại web
+  $("siteForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var url = $("siteUrl").value.trim();
+    if (!url) { $("siteStatus").textContent = "Paste a website link first."; return; }
+    if (!cur) { $("siteStatus").textContent = "Pick a template first."; return; }
+    $("siteGo").disabled = true; $("siteGo").textContent = "Applying…"; $("siteStatus").textContent = "";
+    if (url === appliedUrl && theme.color) {
+      openResult().catch(function (err) { $("siteStatus").textContent = err.message; })
+        .then(function () { $("siteGo").disabled = false; $("siteGo").textContent = "Apply"; });
+      return;
+    }
+    fetch("/api/brand-extract?url=" + encodeURIComponent(url))
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.j.error || "Couldn't read this website.");
+        var j = res.j;
+        var prep = j.logo && !j.logo.mono ? cleanLogo(j.logo.dataUrl).then(function (u) { j.logo.dataUrl = u; }) : Promise.resolve();
+        return prep.then(function () {
+          var src = j.logo ? (j.logo.mono ? (j.colorImage && j.colorImage.dataUrl) : j.logo.dataUrl) : null;
+          return (src ? logoPalette(src) : Promise.resolve({ colors: [], lum: null })).then(function (pal) { return { j: j, pal: pal }; });
+        });
+      })
+      .then(function (x) {
+        var j = x.j, pal = x.pal;
+        var cands = pal.colors.map(function (c) { return { hex: c.hex, score: 120 + c.share * 100 }; });
+        (j.colors || []).forEach(function (c) { cands.push({ hex: c.hex, score: c.score }); });
+        cands.sort(function (a, b) { return b.score - a.score; });
+        theme.name = (j.name || "").slice(0, 20);
+        theme.logo = j.logo ? j.logo.dataUrl : null;
+        theme.logoLum = j.logo && !j.logo.mono ? pal.lum : null;
+        theme.logoMono = null;
+        if (j.logo && j.logo.mono) { try { theme.logoMono = decodeURIComponent(escape(atob(j.logo.dataUrl.split(",")[1]))); } catch (err) {} }
+        theme.color = cands.length ? cands[0].hex : "#5e8dd1";
+        appliedUrl = url;
+        showThumb(theme.logo);
+        if (!cands.length) $("siteStatus").textContent = "No brand color found on that site — kept the default.";
+        return openResult();
+      })
+      .catch(function (err) { $("siteStatus").textContent = err.message; })
+      .then(function () { $("siteGo").disabled = false; $("siteGo").textContent = "Apply"; });
+  });
+
+  // ---------- tải file ----------
+  function fileName(ext, whole) {
+    var part = whole && cur ? cur.id : current;
+    return ((theme.name || "brand").replace(/[^\w-]+/g, "-") + "-" + String(part).replace(/[^\w-]+/g, "-") + "." + ext).toLowerCase();
+  }
+  function save(blob, name) {
+    var u = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = u; a.download = name; a.click();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 4000);
+  }
+  function busy(btn, label, work) {
+    var old = btn.textContent; btn.disabled = true; btn.textContent = label;
+    work().catch(function (e) { $("siteStatus").textContent = e.message; })
+      .then(function () { btn.disabled = false; btn.textContent = old; });
+  }
+  $("dlSvg").addEventListener("click", function () {
+    busy($("dlSvg"), "Preparing…", function () {
+      return BrandKit.exportSvg(view).then(function (xml) { save(new Blob([xml], { type: "image/svg+xml" }), fileName("svg")); });
+    });
+  });
+  // độ phân giải xuất: ≥ 2600px chiều ngang (D60 ×3 để in A4, slide 1440pt ×2)
+  function exportScale(tpl) { return Math.max(2, Math.round(2600 / tpl.width)); }
+  $("dlPng").addEventListener("click", function () {
+    busy($("dlPng"), "Rendering…", function () {
+      return BrandKit.exportPng(view, exportScale(view.tpl)).then(function (b) { save(b, fileName("png")); });
+    });
+  });
+
+  // PDF: vẽ lần lượt từng trang (template một trang thì một trang), mỗi trang một ảnh JPEG
+  // độ phân giải cao, ghép bằng jsPDF (tải khi cần, không nạp sẵn).
+  function loadJsPdf() {
+    if (window.jspdf) return Promise.resolve(window.jspdf.jsPDF);
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      s.onload = function () { res(window.jspdf.jsPDF); };
+      s.onerror = function () { rej(new Error("Couldn't load the PDF library. Check your connection.")); };
+      document.head.appendChild(s);
+    });
+  }
+  $("dlPdf").addEventListener("click", function () {
+    if (deck && !unlocked) { askEmail(startPdf); return; }   // cả bộ PDF chỉ tải sau khi có email
+    startPdf();
+  });
+  function startPdf() {
+    var btn = $("dlPdf");
+    busy(btn, "Preparing…", function () {
+      return loadJsPdf().then(function (JsPDF) {
+        var n = pageCount(), pdf = null, i = 0;
+        var holder = document.createElement("div");
+        holder.style.cssText = "position:absolute;left:-99999px;top:0;width:1200px";
+        document.body.appendChild(holder);
+        function next() {
+          if (i >= n) { holder.remove(); save(pdf.output("blob"), fileName("pdf", true)); return Promise.resolve(); }
+          btn.textContent = n > 1 ? "Rendering " + (i + 1) + " / " + n + "…" : "Rendering…";
+          return BrandKit.load(holder, pagePath(i)).then(function (v) {
+            BrandKit.apply(v, themeFor(v.tpl));
+            return BrandKit.exportCanvas(v, exportScale(v.tpl)).then(function (c) {
+              var w = v.tpl.width, h = v.tpl.height, o = w > h ? "l" : "p";
+              if (!pdf) pdf = new JsPDF({ orientation: o, unit: "pt", format: [w, h], compress: true });
+              else pdf.addPage([w, h], o);
+              pdf.addImage(c.toDataURL("image/jpeg", 0.9), "JPEG", 0, 0, w, h, undefined, "FAST");
+              i++;
+              return next();
+            });
+          });
+        }
+        return next().catch(function (e) { holder.remove(); throw e; });
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

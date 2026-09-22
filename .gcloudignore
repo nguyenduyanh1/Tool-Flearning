@@ -1,0 +1,13 @@
+# Những gì KHÔNG gửi lên Cloud Build khi deploy (giống .dockerignore)
+.git/
+node_modules/
+.env
+.env.*
+templates-src/
+public/templates/**/verify/
+scripts/
+firebase.json
+.firebaserc
+hosting-empty/
+CLAUDE.md
+README.md

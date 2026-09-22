@@ -1,0 +1,7 @@
+.git/
+node_modules/
+.env
+.env.*
+templates-src/
+public/templates/**/verify/
+scripts/
