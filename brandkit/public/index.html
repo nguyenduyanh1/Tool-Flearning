@@ -36,6 +36,8 @@
 
   .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .title { font: 700 16px/1 Archivo, system-ui, sans-serif; letter-spacing: -.01em; }
+  .home { font-size: 12.5px; color: var(--muted); text-decoration: none; }
+  .home:hover { color: var(--ink); text-decoration: underline; }
   .bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .url { flex: 1 1 260px; min-width: 0; padding: 11px 13px; border-radius: 6px; font: inherit;
     border: 1px solid var(--hairline); background: var(--surface); color: var(--ink); }
@@ -99,6 +101,7 @@
 <div class="wrap">
   <header class="top">
     <span class="title">Brand Kit</span>
+    <a class="home" href="/">All tools</a>
   </header>
 
   <form class="bar" id="siteForm">
@@ -152,7 +155,7 @@
   </form>
 </dialog>
 
-<script src="/engine.js"></script>
+<script src="engine.js"></script>
 <script>
   var $ = function (id) { return document.getElementById(id); };
 
@@ -172,7 +175,7 @@
 
   // ---------- khoá slide 6+ bằng email (server mới là chốt thật, đây chỉ là giao diện) ----------
   var FREE = 5, unlocked = false, afterUnlock = null;
-  fetch("/api/unlocked").then(function (r) { return r.json(); })
+  fetch("api/unlocked").then(function (r) { return r.json(); })
     .then(function (j) { unlocked = !!j.unlocked; FREE = j.free || FREE; }).catch(function () {});
   function isLocked(i) { return !!deck && !unlocked && i >= FREE; }
   function askEmail(then) {
@@ -186,7 +189,7 @@
   $("unlockForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var go = $("unlockGo"); go.disabled = true; go.textContent = "Unlocking…"; $("unlockMsg").textContent = "";
-    fetch("/api/lead", {
+    fetch("api/lead", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: $("unlockEmail").value, site: appliedUrl || "", template: cur ? cur.id : "" })
     }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong."); }); })
@@ -212,7 +215,7 @@
         b.appendChild(ph);
       } else {
         var im = document.createElement("img"); im.loading = "lazy"; im.alt = "";
-        im.src = "/templates/" + cur.id + "/" + p.id + "/thumb.png";
+        im.src = "templates/" + cur.id + "/" + p.id + "/thumb.png";
         b.appendChild(im);
       }
       b.setAttribute("aria-current", String(k === pageIdx));
@@ -249,7 +252,7 @@
     var id = cur.id, isDeck = !!cur.pages;
     $("pager").hidden = $("strip").hidden = !isDeck;
     $("dlSvg").hidden = isDeck;                        // bộ slide: tải PDF cả bộ, PNG từng slide
-    return (isDeck ? fetch("/templates/" + id + "/deck.json").then(function (r) { return r.json(); }) : Promise.resolve(null))
+    return (isDeck ? fetch("templates/" + id + "/deck.json").then(function (r) { return r.json(); }) : Promise.resolve(null))
       .then(function (d) {
         deck = d; pageIdx = 0;
         fillStrip();
@@ -261,7 +264,7 @@
   $("pgPrev").addEventListener("click", function () { showPage(pageIdx - 1); });
   $("pgNext").addEventListener("click", function () { showPage(pageIdx + 1); });
 
-  fetch("/templates/index.json").then(function (r) { return r.json(); }).then(function (list) {
+  fetch("templates/index.json").then(function (r) { return r.json(); }).then(function (list) {
     tplList = list;
     var box = $("tpls");
     list.forEach(function (t, i) {
@@ -269,7 +272,7 @@
       b.type = "button"; b.className = "tpl"; b.dataset.id = t.id;
       b.setAttribute("role", "radio"); b.setAttribute("aria-checked", i === 0 ? "true" : "false");
       var img = document.createElement("img");
-      img.src = "/templates/" + t.id + (t.pages ? "/p01" : "") + "/thumb.png"; img.alt = "";
+      img.src = "templates/" + t.id + (t.pages ? "/p01" : "") + "/thumb.png"; img.alt = "";
       b.append(img, document.createTextNode(t.name + (t.pages ? " · " + t.pages + " slides" : "")));
       b.addEventListener("click", function () { pick(t.id); });
       box.appendChild(b);
@@ -400,7 +403,7 @@
         .then(function () { $("siteGo").disabled = false; $("siteGo").textContent = "Apply"; });
       return;
     }
-    fetch("/api/brand-extract?url=" + encodeURIComponent(url))
+    fetch("api/brand-extract?url=" + encodeURIComponent(url))
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error(res.j.error || "Couldn't read this website.");

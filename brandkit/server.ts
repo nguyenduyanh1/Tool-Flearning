@@ -16,8 +16,9 @@ const PROD = process.env.NODE_ENV === "production";
 
 // Số slide xem tự do; từ slide sau đó phải nhập email.
 const FREE_SLIDES = 5;
-// Phải tên "__session": Firebase Hosting (link brandkit-flearning.web.app) xoá mọi
-// cookie khác trước khi chuyển yêu cầu sang Cloud Run.
+// Phải tên "__session": Firebase Hosting xoá mọi cookie khác trước khi chuyển yêu cầu
+// sang Cloud Run. Cookie gắn Path=/brandkit nên tool khác trên cùng tên miền dùng
+// __session của riêng nó (Path khác) mà không giẫm lên vé của Brand Kit.
 const COOKIE = "__session";
 
 // Khoá ký "vé" mở khoá. Trên server thật BẮT BUỘC có BRANDKIT_SECRET — thiếu thì
@@ -69,15 +70,20 @@ function limiter(max: number, windowMs: number) {
 const extractLimit = limiter(20, 10 * 60_000);   // 20 lần đọc website / 10 phút
 const leadLimit = limiter(10, 60 * 60_000);      // 10 lần nhập email / giờ
 
+// Tool nằm dưới /brandkit của tool-flearning.web.app (mỗi tool một ngăn, một service
+// Cloud Run riêng). Firebase Hosting chuyển nguyên đường dẫn /brandkit/... sang đây.
+const BASE = "/brandkit";
+
 const app = express();
 app.disable("x-powered-by");
-app.use(express.json({ limit: "10kb" }));
+const tool = express.Router();
+tool.use(express.json({ limit: "10kb" }));
 
 // Firebase Hosting có CDN đứng trước. Không cho CDN giữ bản sao chung:
 // - API: không lưu đệm (kết quả tuỳ từng người, từng lần)
 // - template: "private" = chỉ trình duyệt của chính khách được giữ. Nếu CDN giữ bản
 //   slide 6+ của một khách đã mở khoá, khách khác sẽ nhận luôn bản đó → mất khoá.
-app.use((req, res, next) => {
+tool.use((req, res, next) => {
   if (req.path.startsWith("/api/")) res.setHeader("Cache-Control", "no-store");
   else if (req.path.startsWith("/templates/")) res.setHeader("Cache-Control", "private, max-age=3600");
   else res.setHeader("Cache-Control", "private, max-age=300");
@@ -87,7 +93,7 @@ app.use((req, res, next) => {
 // Chốt khoá slide đặt TRƯỚC express.static. File của slide 6+ (template.json, ảnh,
 // thumb) chỉ trả khi có vé hợp lệ. Chuẩn hoá đường dẫn trước khi so (giải mã %xx,
 // gộp // và ./, ../) để không lách bằng cách viết đường dẫn khác đi.
-app.use((req, res, next) => {
+tool.use((req, res, next) => {
   let p = req.path;
   try { p = decodeURIComponent(p); } catch { return res.status(400).end(); }
   p = path.posix.normalize(p.replace(/\\/g, "/"));
@@ -101,7 +107,7 @@ app.use((req, res, next) => {
 });
 
 // Đọc logo, tên, màu hãng từ website. Chặn địa chỉ nội bộ nằm trong lib/brand-extract.
-app.get("/api/brand-extract", async (req, res) => {
+tool.get("/api/brand-extract", async (req, res) => {
   if (!extractLimit(clientIp(req))) return res.status(429).json({ error: "Too many requests. Try again in a few minutes." });
   const target = String(req.query.url || "").trim();
   if (!target) return res.status(400).json({ error: "Paste a website link first" });
@@ -112,12 +118,12 @@ app.get("/api/brand-extract", async (req, res) => {
   }
 });
 
-app.get("/api/unlocked", (req, res) => {
+tool.get("/api/unlocked", (req, res) => {
   res.json({ unlocked: unlocked(req), free: FREE_SLIDES });
 });
 
 // Nhập email → lưu vào Firestore (collection leads) → gắn cookie vé, sống 30 ngày.
-app.post("/api/lead", async (req, res) => {
+tool.post("/api/lead", async (req, res) => {
   if (!leadLimit(clientIp(req))) return res.status(429).json({ error: "Too many attempts. Try again later." });
   const email = String(req.body?.email || "").trim().toLowerCase();
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) {
@@ -136,12 +142,23 @@ app.post("/api/lead", async (req, res) => {
     console.log("[máy local] không lưu Firestore, chỉ ghi log:", lead.email);
   }
   const exp = String(Date.now() + 30 * 86400_000);
-  res.setHeader("Set-Cookie", `${COOKIE}=${exp}.${sign(exp)}; Path=/; Max-Age=${30 * 86400}; HttpOnly; SameSite=Lax`
+  res.setHeader("Set-Cookie", `${COOKIE}=${exp}.${sign(exp)}; Path=${BASE}; Max-Age=${30 * 86400}; HttpOnly; SameSite=Lax`
     + (PROD ? "; Secure" : ""));
   res.json({ ok: true });
 });
 
 // cacheControl: false = giữ nguyên header Cache-Control đặt ở trên
-app.use(express.static(path.join(ROOT, "public"), { extensions: ["html"], cacheControl: false }));
+tool.use(express.static(path.join(ROOT, "public"), { extensions: ["html"], cacheControl: false }));
+
+// "/brandkit" (thiếu dấu /) → "/brandkit/": trang dùng đường dẫn tương đối (engine.js,
+// templates/, api/), thiếu dấu / thì trình duyệt tính sai thư mục.
+app.get(BASE, (req, res, next) => {
+  if (req.path !== BASE) return next();          // express không phân biệt "/brandkit/" — chỉ bắt đúng bản thiếu /
+  const q = req.originalUrl.indexOf("?");
+  res.redirect(301, BASE + "/" + (q >= 0 ? req.originalUrl.slice(q) : ""));
+});
+app.use(BASE, tool);
+// Mở thẳng link run.app (không qua Hosting) → đưa vào tool
+app.get("/", (req, res) => res.redirect(302, BASE + "/"));
 
 app.listen(PORT, "0.0.0.0", () => console.log(`Brand Kit chạy ở http://localhost:${PORT}`));

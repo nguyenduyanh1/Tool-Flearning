@@ -378,7 +378,7 @@
 
   // id = template một trang ("d60-p1") hoặc một trang của bộ slide ("mpc/p07")
   function load(container, id) {
-    var base = "/templates/" + id + "/";
+    var base = "templates/" + id + "/";   // tương đối: trang nằm ở /brandkit/
     return fetch(base + "template.json").then(function (r) {
       if (!r.ok) throw new Error("Template not found: " + id);
       return r.json();
