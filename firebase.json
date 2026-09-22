@@ -1,9 +1,21 @@
 {
-  "hosting": {
-    "site": "brandkit-flearning",
-    "public": "hosting-empty",
-    "rewrites": [
-      { "source": "**", "run": { "serviceId": "brandkit-flearning", "region": "asia-southeast1" } }
-    ]
-  }
+  "hosting": [
+    {
+      "site": "tool-flearning",
+      "public": "hub",
+      "cleanUrls": true,
+      "rewrites": [
+        { "source": "/brandkit", "run": { "serviceId": "brandkit-flearning", "region": "asia-southeast1" } },
+        { "source": "/brandkit/**", "run": { "serviceId": "brandkit-flearning", "region": "asia-southeast1" } }
+      ]
+    },
+    {
+      "site": "brandkit-flearning",
+      "public": "hub",
+      "redirects": [
+        { "source": "/", "destination": "https://tool-flearning.web.app/brandkit/", "type": 301 },
+        { "source": "/**", "destination": "https://tool-flearning.web.app/brandkit/", "type": 301 }
+      ]
+    }
+  ]
 }
