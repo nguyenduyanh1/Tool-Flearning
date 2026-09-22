@@ -8,3 +8,7 @@ node_modules/
 
 # Ảnh đối chiếu khi soát template — chỉ dùng trên máy
 **/public/templates/**/verify/
+
+# Email khách xuất ra CSV — không bao giờ đưa lên git
+leads-export/
+*.csv

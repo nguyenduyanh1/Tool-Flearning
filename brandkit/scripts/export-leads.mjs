@@ -5,7 +5,7 @@
 //   vd: npm run export-leads -- brandkit-flearning D:/BrandKit-Leads
 // gcloud không có trong PATH thì đặt biến GCLOUD = đường dẫn tới gcloud(.cmd).
 //
-// Mặc định ghi ra thư mục leads-export/ NGOÀI repo (cạnh thư mục repo) vì chứa email khách.
+// Mặc định ghi ra thư mục leads-export/ NGOÀI repo (cạnh thư mục repo, vd D:/leads-export) vì chứa email khách.
 // Mở thẳng bằng Excel được (có BOM để hiện đúng tiếng Việt).
 
 import fs from "node:fs";
@@ -15,7 +15,8 @@ import { fileURLToPath } from "node:url";
 
 const project = process.argv[2] || process.env.FIRESTORE_PROJECT;
 if (!project) { console.error("Thiếu mã project: npm run export-leads -- <project-id>"); process.exit(1); }
-const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// Gốc repo tool-flearning (script nằm ở brandkit/scripts/ → lùi 2 cấp)
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const outDir = path.resolve(process.argv[3] || path.join(repo, "..", "leads-export"));
 
 const gcloud = process.env.GCLOUD || "gcloud";
