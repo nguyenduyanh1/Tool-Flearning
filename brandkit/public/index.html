@@ -95,13 +95,37 @@
   .unlock .fine { font-size: 11.5px; }
   .unlock .url { flex: none; width: 100%; }
   .unlock .bar { justify-content: flex-end; }
+
+  /* Intro: hiện lần đầu vào tool, mở lại bằng "How it works" */
+  .top .links { display: flex; gap: 14px; align-items: center; }
+  .linkbtn { border: none; background: none; padding: 0; cursor: pointer; font-family: inherit; line-height: inherit; }
+  dialog.intro { border: 1px solid var(--hairline); border-radius: 12px; padding: 0;
+    width: min(620px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto;
+    background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  dialog.intro::backdrop { background: rgba(11,26,31,.55); }
+  .intro .in { padding: 26px 22px 22px; display: grid; gap: 14px; }
+  @media (min-width: 640px) { .intro .in { padding: 34px 34px 28px; } }
+  .intro h2 { font: 700 23px/1.2 Archivo, sans-serif; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+  .intro h3 { font: 700 15px/1.3 Archivo, sans-serif; margin: 8px 0 0; }
+  .intro p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .intro ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; counter-reset: s; }
+  .intro li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;
+    font-size: 14px; line-height: 1.5; color: var(--muted); }
+  .intro li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ink); color: var(--paper); font: 700 12.5px/1 "IBM Plex Sans", sans-serif; }
+  .intro li b { color: var(--ink); font-weight: 600; }
+  .intro .goal { padding: 12px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink); }
+  .intro .bar { justify-content: flex-end; margin-top: 4px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <span class="title">Brand Kit</span>
-    <a class="home" href="/">All tools</a>
+    <span class="links">
+      <button class="home linkbtn" type="button" id="introOpen">How it works</button>
+      <a class="home" href="/">All tools</a>
+    </span>
   </header>
 
   <form class="bar" id="siteForm">
@@ -140,6 +164,31 @@
   </section>
 </div>
 
+<dialog class="intro" id="intro" aria-labelledby="introTitle">
+  <form method="dialog" class="in">
+    <h2 id="introTitle">Make Patient Communication Clearer, More Supportive, and More Trustworthy</h2>
+    <p>Clear communication can make a real difference in how patients understand their health, feel supported, and engage with their care.</p>
+    <p>This course gives you practical guidance on communicating complex health information in a way that is clear, patient-friendly, and easy to understand, helping you build trust and better support patients throughout their healthcare journey.</p>
+
+    <h3>Make it yours</h3>
+    <p>Use this tool to adapt the course to your organization’s brand and communication style.</p>
+    <p>Simply add your organization’s website URL, and the tool will use your brand information to personalize the course. You can then review the adapted version and download it for use within your organization.</p>
+
+    <h3>How it works</h3>
+    <ol>
+      <li><span><b>Add your website</b> – Enter your organization’s website URL.</span></li>
+      <li><span><b>Adapt the course</b> – The tool applies your brand and relevant organizational information.</span></li>
+      <li><span><b>Download &amp; use</b> – Download the finished course for your patient communication or education initiatives.</span></li>
+    </ol>
+
+    <p class="goal">The goal is simple: help you turn good communication principles into patient-facing learning content that feels consistent with your organization and your patients.</p>
+
+    <div class="bar">
+      <button class="btn primary" value="go" id="introGo">Get started</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog class="unlock" id="unlock" aria-labelledby="unlockTitle">
   <form id="unlockForm">
     <h2 id="unlockTitle">See all slides</h2>
@@ -158,6 +207,20 @@
 <script src="engine.js"></script>
 <script>
   var $ = function (id) { return document.getElementById(id); };
+
+  // ---------- Intro: hiện lần đầu vào tool; đóng (Get started hoặc Esc) thì nhớ lại ----------
+  // localStorage có thể bị chặn (cửa sổ ẩn danh, chặn cookie) → khi đó cứ hiện mỗi lần vào.
+  (function () {
+    var KEY = "bk_intro_seen", seen = false;
+    try { seen = localStorage.getItem(KEY) === "1"; } catch (e) {}
+    $("intro").addEventListener("close", function () {
+      try { localStorage.setItem(KEY, "1"); } catch (e) {}
+      // chờ trình duyệt trả focus về chỗ cũ xong rồi mới đưa con trỏ vào ô link
+      setTimeout(function () { $("siteUrl").focus(); }, 0);
+    });
+    $("introOpen").addEventListener("click", function () { $("intro").showModal(); });
+    if (!seen) $("intro").showModal();
+  })();
 
   // thương hiệu đang áp; color = null nghĩa là chưa áp, hiện template với màu gốc
   var theme = { color: null, name: "", logo: null, logoMono: null, logoLum: null };
