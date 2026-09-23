@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brand Kit</title>
+<!-- HubSpot đo page view và nối form submission với phiên truy cập nếu khách đã đồng ý cookie. -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/3797615.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@300;400;500;600;700;800;900&family=Montserrat:wght@900&display=swap">
 <style>
   :root {
@@ -233,6 +235,10 @@
 
   // ---------- khoá slide 6+ bằng email (server mới là chốt thật, đây chỉ là giao diện) ----------
   var FREE = 5, unlocked = false, afterUnlock = null;
+  function cookie(name) {
+    var m = document.cookie.match(new RegExp("(?:^|;\\s*)" + name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&") + "=([^;]*)"));
+    return m ? decodeURIComponent(m[1]) : "";
+  }
   fetch("api/unlocked").then(function (r) { return r.json(); })
     .then(function (j) { unlocked = !!j.unlocked; FREE = j.free || FREE; }).catch(function () {});
   function isLocked(i) { return !!deck && !unlocked && i >= FREE; }
@@ -249,7 +255,7 @@
     var go = $("unlockGo"); go.disabled = true; go.textContent = "Unlocking…"; $("unlockMsg").textContent = "";
     fetch("api/lead", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: $("unlockEmail").value, site: appliedUrl || "", template: cur ? cur.id : "" })
+      body: JSON.stringify({ email: $("unlockEmail").value, site: appliedUrl || "", template: cur ? cur.id : "", hutk: cookie("hubspotutk") })
     }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || "Something went wrong."); }); })
       .then(function () {
         unlocked = true;

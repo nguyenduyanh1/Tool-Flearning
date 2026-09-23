@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { createHmac, createHash, timingSafeEqual, randomBytes } from "node:crypto";
 import { extractBrand } from "./lib/brand-extract.ts";
 import { saveLead, onCloudRun } from "./lib/firestore.ts";
+import { submitHubSpotLead } from "./lib/hubspot.ts";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
@@ -138,8 +139,12 @@ tool.post("/api/lead", async (req, res) => {
   if (onCloudRun()) {
     // Không lưu được thì không mở khoá — mục đích của bước này là thu email.
     if (!(await saveLead(lead))) return res.status(503).json({ error: "Couldn't save right now. Try again shortly." });
+    // HubSpot form là nguồn quản lý lead chính. Không nhận được form submission thì
+    // không mở khoá, tránh trường hợp khách lấy đủ deck nhưng lead bị thất lạc.
+    const hutk = String(req.body?.hutk || "").slice(0, 200);
+    if (!(await submitHubSpotLead(email, hutk))) return res.status(503).json({ error: "Couldn't save right now. Try again shortly." });
   } else {
-    console.log("[máy local] không lưu Firestore, chỉ ghi log:", lead.email);
+    console.log("[máy local] không lưu Firestore/HubSpot, chỉ ghi log:", lead.email);
   }
   const exp = String(Date.now() + 30 * 86400_000);
   res.setHeader("Set-Cookie", `${COOKIE}=${exp}.${sign(exp)}; Path=${BASE}; Max-Age=${30 * 86400}; HttpOnly; SameSite=Lax`

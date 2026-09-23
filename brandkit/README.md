@@ -58,6 +58,12 @@ Biến môi trường bắt buộc: `BRANDKIT_SECRET` — chuỗi ngẫu nhiên 
 Thiếu biến này server sẽ không khởi động. Đổi giá trị = mọi vé cũ mất hiệu lực (khách
 phải nhập lại email).
 
+Brand Kit cũng gửi mỗi email đã mở khoá sang HubSpot form `Brand Kit – Unlock full deck`
+(portal `3797615`) qua Forms Submission API. Không cần Private App hay token; endpoint chỉ
+nhận submission cho form đã định danh. Có thể đổi portal hoặc form bằng
+`HUBSPOT_PORTAL_ID` và `HUBSPOT_FORM_GUID`. Nếu HubSpot không nhận submission thì khách
+không được mở khoá, để không mất lead.
+
 Chạy trong thư mục `brandkit/`:
 
 ```bash
